@@ -18,9 +18,7 @@ public class Main {
             System.out.println("No cities found in the file.");
             return;
         } else {
-            for (City city : cities) {
-                System.out.println(city.distanceTo(cities.get(0)));
-            }
+          System.out.println(solve(cities));
         	
         }
 
@@ -63,6 +61,42 @@ public class Main {
         }
 
         return cities;
+    }
+
+      // Nearest Neighbour Algorithm for TSP
+      public static ArrayList<City> solve(ArrayList<City> cities) {
+        ArrayList<City> tour = new ArrayList<>();
+        ArrayList<City> remainingCities = new ArrayList<>(cities);
+        
+        // Start from the first city
+        City currentCity = remainingCities.remove(0);
+        tour.add(currentCity);
+
+        // Iterate until all cities are visited
+        while (!remainingCities.isEmpty()) {
+            City nearestCity = findNearestCity(currentCity, remainingCities);
+            tour.add(nearestCity);
+            remainingCities.remove(nearestCity);
+            currentCity = nearestCity;
+        }
+        
+        // Return to the starting city
+        tour.add(tour.get(0));
+        return tour;
+    }
+
+     // Method to find the nearest city to the current city
+     private static City findNearestCity(City currentCity, ArrayList<City> cities) {
+        City nearestCity = null;
+        double minDistance = Double.MAX_VALUE;
+        for (City city : cities) {
+            double distance = currentCity.distanceTo(city);
+            if (distance < minDistance) {
+                minDistance = distance;
+                nearestCity = city;
+            }
+        }
+        return nearestCity;
     }
 }
 
