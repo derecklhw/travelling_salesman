@@ -7,7 +7,11 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        String filePath = "/home/dereck/eclipse-workspace/travelling_salesman/sample1-22.txt"; // Replace with actual file path
+        if (args.length == 0) {
+            System.out.println("No file path provided.");
+            return;
+        }
+        String filePath = args[0];
         ArrayList<City> cities = readCitiesFromFile(filePath);
 
         if (cities.isEmpty()) {
@@ -15,7 +19,7 @@ public class Main {
             return;
         } else {
             for (City city : cities) {
-                System.out.println(city);
+                System.out.println(city.distanceTo(cities.get(0)));
             }
         	
         }
