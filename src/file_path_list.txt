@@ -1,0 +1,7 @@
+/home/dereck/eclipse-workspace/travelling_salesman/sample/sample1-22.txt
+/home/dereck/eclipse-workspace/travelling_salesman/sample/sample2-22.txt
+/home/dereck/eclipse-workspace/travelling_salesman/sample/sample3-22.txt
+/home/dereck/eclipse-workspace/travelling_salesman/sample/sample4-22.txt
+/home/dereck/eclipse-workspace/travelling_salesman/train/train1.txt
+/home/dereck/eclipse-workspace/travelling_salesman/train/train2.txt
+/home/dereck/eclipse-workspace/travelling_salesman/train/train3.txt
