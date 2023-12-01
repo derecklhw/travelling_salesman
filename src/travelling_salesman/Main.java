@@ -18,7 +18,14 @@ public class Main {
             System.out.println("No cities found in the file.");
             return;
         } else {
-          System.out.println(solve(cities));
+          ArrayList<City> solution = solve(cities);
+          for (int i = 0; i < solution.size(); i++) {
+              if (i > 0) {
+                  System.out.print("-");
+              }
+              System.out.print(solution.get(i).getNumber());
+          }
+          System.out.println();
         	
         }
 
@@ -37,9 +44,11 @@ public class Main {
         try {
             File file = new File(filePath);
             Scanner scanner = new Scanner(file);
-
+    
             while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
+                String line = scanner.nextLine().trim(); // Trim each line
+                if (line.isEmpty()) continue; // Skip empty lines
+    
                 String[] parts = line.split("\\s+");
                 if (parts.length == 3) {
                     try {
@@ -47,22 +56,22 @@ public class Main {
                         double x = Double.parseDouble(parts[1]);
                         double y = Double.parseDouble(parts[2]);
                         cities.add(new City(cityNumber, x, y));
+                        // System.out.println("Read city: " + cityNumber + " (" + x + ", " + y + ")"); // Optional: For debugging
                     } catch (NumberFormatException e) {
-                        System.out.println("Invalid number format in line: " + line);
+                        System.out.println("Invalid number format in line: " + line + " - " + e.getMessage());
                     }
                 } else {
                     System.out.println("Invalid line format: " + line);
                 }
             }
-
+    
             scanner.close();
         } catch (FileNotFoundException e) {
             System.out.println("File not found: " + filePath);
         }
-
+    
         return cities;
     }
-
       // Nearest Neighbour Algorithm for TSP
       public static ArrayList<City> solve(ArrayList<City> cities) {
         ArrayList<City> tour = new ArrayList<>();
