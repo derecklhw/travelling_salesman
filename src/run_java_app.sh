@@ -11,7 +11,7 @@ FILE_PATHS=$1
 
 # Compile the Java application
 # Replace 'Main.java' with the path to your Java file
-javac travelling_salesman/Main.java travelling_salesman/City.java
+javac travelling_salesman/*.java 
 
 # Check if compilation was successful
 if [ $? -eq 0 ]; then
