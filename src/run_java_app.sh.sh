@@ -16,6 +16,7 @@ javac travelling_salesman/Main.java travelling_salesman/City.java
 # Check if compilation was successful
 if [ $? -eq 0 ]; then
     echo "Compilation successful."
+    echo ""
 else
     echo "Compilation failed."
     exit 1
@@ -24,9 +25,13 @@ fi
 # Iterate over each file path in the file
 while IFS= read -r file_path
 do
-    # Run the Java application with the current file path
-    # Replace 'Main' with your main class name and adjust arguments as needed
-    echo $file_path
-    java travelling_salesman.Main "$file_path"
-    echo ""
+    for input in 1 2 3
+    do
+        # Run the Java application with the current file path
+        # Replace 'Main' with your main class name and adjust arguments as needed
+        echo "Running with file path: $file_path and input: $input"
+        # java travelling_salesman.Main "$file_path"
+        echo $input | java travelling_salesman.Main "$file_path"
+        echo ""
+    done
 done < "$FILE_PATHS"
