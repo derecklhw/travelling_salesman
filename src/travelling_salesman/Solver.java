@@ -8,8 +8,30 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
 
+/**
+ * Utility class for solving the Travelling Salesman Problem.
+ */
 public class Solver {
+    /**
+     * Solves the Travelling Salesman Problem using the Nearest Neighbour
+     * algorithm.
+     * 
+     * @param cities The list of cities to use in the algorithm.
+     * @return The solution to the Travelling Salesman Problem.
+     */
     public static ArrayList<City> solveNearestNeighbour(ArrayList<City> cities) {
+        int n = cities.size();
+        double[][] distanceMatrix = new double[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i == j) {
+                    distanceMatrix[i][j] = 0;
+                } else {
+                    distanceMatrix[i][j] = cities.get(i).distanceTo(cities.get(j));
+                }
+            }
+        }
+
         ArrayList<City> tour = new ArrayList<>();
         ArrayList<City> remainingCities = new ArrayList<>(cities);
 
@@ -17,7 +39,7 @@ public class Solver {
         tour.add(currentCity);
 
         while (!remainingCities.isEmpty()) {
-            City nearestCity = findNearestCityNearestNeighbour(currentCity, remainingCities);
+            City nearestCity = findNearestCityNearestNeighbour(currentCity, remainingCities, distanceMatrix);
             tour.add(nearestCity);
             remainingCities.remove(nearestCity);
             currentCity = nearestCity;
@@ -27,11 +49,24 @@ public class Solver {
         return tour;
     }
 
-    private static City findNearestCityNearestNeighbour(City currentCity, ArrayList<City> cities) {
+    /**
+     * Finds the nearest city to the current city using the Nearest Neighbour
+     * algorithm.
+     * 
+     * @param currentCity    The current city.
+     * @param cities         The list of cities to search.
+     * @param distanceMatrix The distance matrix containing the distances between
+     *                       each pair of cities.
+     * @return The nearest city to the current city.
+     */
+    private static City findNearestCityNearestNeighbour(City currentCity, ArrayList<City> cities,
+            double[][] distanceMatrix) {
         City nearestCity = null;
         double minDistance = Double.MAX_VALUE;
+        int currentIndex = currentCity.getNumber() - 1;
+
         for (City city : cities) {
-            double distance = currentCity.distanceTo(city);
+            double distance = distanceMatrix[currentIndex][city.getNumber() - 1];
             if (distance < minDistance) {
                 minDistance = distance;
                 nearestCity = city;
@@ -40,6 +75,12 @@ public class Solver {
         return nearestCity;
     }
 
+    /**
+     * Solves the Travelling Salesman Problem using Dijkstra's algorithm.
+     * 
+     * @param cities The list of cities to use in the algorithm.
+     * @return The solution to the Travelling Salesman Problem.
+     */
     public static ArrayList<City> solveDijkstra(ArrayList<City> cities) {
         ArrayList<City> tour = new ArrayList<>();
         ArrayList<City> remainingCities = new ArrayList<>(cities);
@@ -58,6 +99,13 @@ public class Solver {
         return tour;
     }
 
+    /**
+     * Finds the nearest city to the current city using Dijkstra's algorithm.
+     * 
+     * @param startCity The current city.
+     * @param cities    The list of cities to search.
+     * @return The nearest city to the current city.
+     */
     private static City findNearestCityDijkstra(City startCity, ArrayList<City> cities) {
         City nearestCity = null;
         double minDistance = Double.MAX_VALUE;
@@ -72,6 +120,14 @@ public class Solver {
         return nearestCity;
     }
 
+    /**
+     * Finds the shortest path between two cities using Dijkstra's algorithm.
+     * 
+     * @param startCity The start city.
+     * @param endCity   The end city.
+     * @param cities    The list of cities to search.
+     * @return The shortest path between the two cities.
+     */
     private static double shortestPathDijkstra(City startCity, City endCity, ArrayList<City> cities) {
         Map<City, Double> shortestPathMap = new HashMap<>();
         PriorityQueue<CityDistancePair> priorityQueue = new PriorityQueue<>(
@@ -108,7 +164,12 @@ public class Solver {
         return shortestPathMap.get(endCity);
     }
 
-    // Helper class to pair cities with their distances
+    /**
+     * Solves the Travelling Salesman Problem using Prim's algorithm.
+     * 
+     * @param cities The list of cities to use in the algorithm.
+     * @return The solution to the Travelling Salesman Problem.
+     */
     private static class CityDistancePair {
         private City city;
         private double distance;
@@ -127,8 +188,13 @@ public class Solver {
         }
     }
 
+    /**
+     * Solves the Travelling Salesman Problem using Prim's algorithm.
+     * 
+     * @param cities The list of cities to use in the algorithm.
+     * @return The solution to the Travelling Salesman Problem.
+     */
     public static ArrayList<City> solveMST(ArrayList<City> cities) {
-        // Create a graph from the cities
         int n = cities.size();
         double[][] graph = new double[n][n];
         for (int i = 0; i < n; i++) {
@@ -139,7 +205,6 @@ public class Solver {
             }
         }
 
-        // Prim's algorithm to find MST
         boolean[] visited = new boolean[n];
         double[] key = new double[n];
         int[] parent = new int[n];
@@ -164,15 +229,23 @@ public class Solver {
             }
         }
 
-        // Depth-First Search (DFS) traversal of the MST to create the tour
         ArrayList<City> tour = new ArrayList<>();
         Set<Integer> visitedCities = new HashSet<>();
         dfsMST(0, parent, visitedCities, cities, tour);
 
-        tour.add(tour.get(0)); // Add the start city at the end to complete the tour
+        tour.add(tour.get(0));
         return tour;
     }
 
+    /**
+     * Performs a depth-first search on the minimum spanning tree to find a tour.
+     * 
+     * @param current       The current city.
+     * @param parent        The parent array of the minimum spanning tree.
+     * @param visitedCities The set of visited cities.
+     * @param cities        The list of cities.
+     * @param tour          The tour.
+     */
     private static void dfsMST(int current, int[] parent, Set<Integer> visitedCities, ArrayList<City> cities,
             ArrayList<City> tour) {
         visitedCities.add(current);
@@ -185,7 +258,9 @@ public class Solver {
         }
     }
 
-    // Helper class for edges in the graph
+    /**
+     * Represents an edge between two cities.
+     */
     private static class CityEdge {
         private int dest;
         private double weight;

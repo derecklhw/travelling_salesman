@@ -1,48 +1,97 @@
 package travelling_salesman;
 
+/**
+ * Represents a city identified by x and y coordinates.
+ */
 class City {
-    private int number;
-    private double x;
-    private double y;
+	private int number;
+	private double xCoordinate;
+	private double yCoordinate;
 
-    public City(int number, double x, double y) {
-        this.number = number;
-        this.x = x;
-        this.y = y;
-    }
+	/**
+	 * Constructs a new City instance.
+	 *
+	 * @param number      The unique identifier of the city.
+	 * @param xCoordinate The x-coordinate of the city's location.
+	 * @param yCoordinate The y-coordinate of the city's location.
+	 */
+	public City(int number, double xCoordinate, double yCoordinate) {
+		this.number = number;
+		this.xCoordinate = xCoordinate;
+		this.yCoordinate = yCoordinate;
+	}
 
+	/**
+	 * Returns the unique identifier of the city.
+	 * 
+	 * @return The unique identifier of the city.
+	 */
 	public int getNumber() {
 		return number;
 	}
 
+	/**
+	 * Sets the unique identifier of the city.
+	 * 
+	 * @param number The unique identifier of the city.
+	 */
 	public void setNumber(int number) {
 		this.number = number;
 	}
 
-	public double getX() {
-		return x;
+	/**
+	 * Returns the x-coordinate of the city's location.
+	 * 
+	 * @return The x-coordinate of the city's location.
+	 */
+	public double getXCoordinate() {
+		return xCoordinate;
 	}
 
-	public void setX(double x) {
-		this.x = x;
+	/**
+	 * Sets the x-coordinate of the city's location.
+	 * 
+	 * @param xCoordinate The x-coordinate of the city's location.
+	 */
+	public void setXCoordinate(double xCoordinate) {
+		this.xCoordinate = xCoordinate;
 	}
 
-	public double getY() {
-		return y;
+	/**
+	 * Returns the y-coordinate of the city's location.
+	 * 
+	 * @return The y-coordinate of the city's location.
+	 */
+	public double getYCoordinate() {
+		return yCoordinate;
 	}
 
-	public void setY(double y) {
-		this.y = y;
+	/**
+	 * Sets the y-coordinate of the city's location.
+	 * 
+	 * @param yCoordinate The y-coordinate of the city's location.
+	 */
+	public void setYCoordinate(double yCoordinate) {
+		this.yCoordinate = yCoordinate;
 	}
 
-    public double distanceTo(City other) {
-        double dx = this.x - other.x;
-        double dy = this.y - other.y;
-        return Math.sqrt(dx * dx + dy * dy);
-    }
+	/**
+	 * Calculates the Euclidean distance from this city to another city.
+	 *
+	 * @param other The other city to which distance is to be calculated.
+	 * @return The Euclidean distance to the other city.
+	 */
+	public double distanceTo(City other) {
+		double dx = this.xCoordinate - other.xCoordinate;
+		double dy = this.yCoordinate - other.yCoordinate;
+		return Math.sqrt(dx * dx + dy * dy);
+	}
 
+	/**
+	 * Returns a string representation of this city.
+	 */
 	@Override
 	public String toString() {
-		return "City [number=" + number + ", x=" + x + ", y=" + y + "]";
-	}    
+		return "City [number=" + number + ", x=" + xCoordinate + ", y=" + yCoordinate + "]";
+	}
 }
