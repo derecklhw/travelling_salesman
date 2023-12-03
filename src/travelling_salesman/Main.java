@@ -23,18 +23,24 @@ public class Main {
             switch (choice) {
                 case 1:
                     System.out.println("Solving with Nearest Neighbour...");
+                    long startTime = System.nanoTime();
                     ArrayList<City> solution = Solver.solveNearestNeighbour(cities);
-                    UserInterface.displaySolution(solution);
+                    long endTime = System.nanoTime();
+                    UserInterface.displaySolution(solution, startTime, endTime);
                     break;
                 case 2:
                     System.out.println("Solving with Dijkstra's Algorithm...");
+                    long startTime2 = System.nanoTime();
                     ArrayList<City> solution2 = Solver.solveDijkstra(cities);
-                    UserInterface.displaySolution(solution2);
+                    long endTime2 = System.nanoTime();
+                    UserInterface.displaySolution(solution2, startTime2, endTime2);
                     break;
                 case 3:
                     System.out.println("Solving with Minimum Spanning Tree...");
+                    long startTime3 = System.nanoTime();
                     ArrayList<City> solution3 = Solver.solveMST(cities);
-                    UserInterface.displaySolution(solution3);
+                    long endTime3 = System.nanoTime();
+                    UserInterface.displaySolution(solution3, startTime3, endTime3);
                     break;
                 case 4:
                     System.out.println("Exiting...");

@@ -32,12 +32,14 @@ public class UserInterface {
         System.out.print("Enter your choice (number): ");
     }
 
-    public static void displaySolution(ArrayList<City> solution) {
+    public static void displaySolution(ArrayList<City> solution, long startTime, long endTime) {
+        long duration = endTime - startTime;
         for (int i = 0; i < solution.size(); i++) {
             if (i > 0)
                 System.out.print("-");
             System.out.print(solution.get(i).getNumber());
         }
         System.out.println();
+        System.out.println("Execution Time: " + duration + " nanoseconds");
     }
 }
