@@ -10,7 +10,6 @@ fi
 FILE_PATHS=$1
 
 # Compile the Java application
-# Replace 'Main.java' with the path to your Java file
 javac travelling_salesman/*.java 
 
 # Check if compilation was successful
@@ -28,9 +27,7 @@ do
     for input in 1 2 3
     do
         # Run the Java application with the current file path
-        # Replace 'Main' with your main class name and adjust arguments as needed
         echo "Running with file path: $file_path and input: $input"
-        # java travelling_salesman.Main "$file_path"
         echo $input | java travelling_salesman.Main "$file_path"
         echo ""
     done
