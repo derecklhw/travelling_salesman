@@ -1,8 +1,6 @@
 package travelling_salesman;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.PriorityQueue;
 
 /**
  * Utility class for solving the Travelling Salesman Problem.
