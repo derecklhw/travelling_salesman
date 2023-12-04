@@ -41,19 +41,19 @@ public class Main {
             case 1:
                 System.out.println("\nSolving with Nearest Neighbour...");
                 startTime = System.nanoTime();
-                solution = Solver.solveNearestNeighbour(cities);
+                solution = SolverNN.solveNearestNeighbour(cities);
                 endTime = System.nanoTime();
                 break;
             case 2:
                 System.out.println("\nSolving with Dijkstra's Algorithm...");
                 startTime = System.nanoTime();
-                solution = Solver.solveDijkstra(cities);
+                solution = SolverDijkstra.solveDijkstra(cities);
                 endTime = System.nanoTime();
                 break;
             case 3:
                 System.out.println("\nSolving with Minimum Spanning Tree...");
                 startTime = System.nanoTime();
-                solution = Solver.solveMST(cities);
+                solution = SolverMST.solveMST(cities);
                 endTime = System.nanoTime();
                 break;
             case 4:
