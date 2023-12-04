@@ -39,19 +39,19 @@ public class Main {
 
         switch (choice) {
             case 1:
-                System.out.println("Solving with Nearest Neighbour...");
+                System.out.println("\nSolving with Nearest Neighbour...");
                 startTime = System.nanoTime();
                 solution = Solver.solveNearestNeighbour(cities);
                 endTime = System.nanoTime();
                 break;
             case 2:
-                System.out.println("Solving with Dijkstra's Algorithm...");
+                System.out.println("\nSolving with Dijkstra's Algorithm...");
                 startTime = System.nanoTime();
                 solution = Solver.solveDijkstra(cities);
                 endTime = System.nanoTime();
                 break;
             case 3:
-                System.out.println("Solving with Minimum Spanning Tree...");
+                System.out.println("\nSolving with Minimum Spanning Tree...");
                 startTime = System.nanoTime();
                 solution = Solver.solveMST(cities);
                 endTime = System.nanoTime();

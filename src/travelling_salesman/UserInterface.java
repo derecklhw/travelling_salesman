@@ -41,7 +41,7 @@ public class UserInterface {
         System.out.println("2. Dijkstra's Algorithm");
         System.out.println("3. Minimum Spanning Tree");
         System.out.println("4. Exit");
-        System.out.print("Enter your choice (number): ");
+        System.out.print("\nEnter your choice (number): ");
     }
 
     /**
@@ -52,13 +52,32 @@ public class UserInterface {
      * @param endTime   The time at which the algorithm ended.
      */
     public static void displaySolution(ArrayList<City> solution, long startTime, long endTime) {
+        System.out.print("Path: ");
         for (int i = 0; i < solution.size(); i++) {
             if (i > 0)
                 System.out.print("-");
             System.out.print(solution.get(i).getNumber());
         }
-        System.out.println();
+        System.out.println("");
+
+        double totalDistance = calculateTotalDistance(solution);
+        System.out.println("Total Path Distance: " + totalDistance);
+
         long duration = endTime - startTime;
         System.out.println("Execution Time: " + duration + " nanoseconds");
+    }
+
+    /**
+     * Calculates the total distance of a solution.
+     * 
+     * @param solution The list of cities in the solution.
+     * @return The total distance of the tour.
+     */
+    public static double calculateTotalDistance(ArrayList<City> solution) {
+        double totalDistance = 0;
+        for (int i = 0; i < solution.size() - 1; i++) {
+            totalDistance += solution.get(i).distanceTo(solution.get(i + 1));
+        }
+        return totalDistance;
     }
 }
