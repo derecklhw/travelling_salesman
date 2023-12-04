@@ -165,24 +165,37 @@ public class Solver {
     }
 
     /**
-     * Solves the Travelling Salesman Problem using Prim's algorithm.
-     * 
-     * @param cities The list of cities to use in the algorithm.
-     * @return The solution to the Travelling Salesman Problem.
+     * Represents a pair of a city and its distance from another city.
      */
     private static class CityDistancePair {
         private City city;
         private double distance;
 
+        /**
+         * Creates a new CityDistancePair.
+         * 
+         * @param city     The city.
+         * @param distance The distance from another city.
+         */
         public CityDistancePair(City city, double distance) {
             this.city = city;
             this.distance = distance;
         }
 
+        /**
+         * Returns the city.
+         * 
+         * @return The city.
+         */
         public City getCity() {
             return city;
         }
 
+        /**
+         * Returns the distance from another city.
+         * 
+         * @return The distance from another city.
+         */
         public double getDistance() {
             return distance;
         }
@@ -265,15 +278,31 @@ public class Solver {
         private int dest;
         private double weight;
 
+        /**
+         * Creates a new CityEdge.
+         * 
+         * @param dest   The destination city.
+         * @param weight The weight of the edge.
+         */
         public CityEdge(int dest, double weight) {
             this.dest = dest;
             this.weight = weight;
         }
 
+        /**
+         * Returns the destination city.
+         * 
+         * @return The destination city.
+         */
         public int getDest() {
             return dest;
         }
 
+        /**
+         * Returns the weight of the edge.
+         * 
+         * @return The weight of the edge.
+         */
         public double getWeight() {
             return weight;
         }

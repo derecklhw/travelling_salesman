@@ -82,9 +82,8 @@ class City {
 	 * @return The Euclidean distance to the other city.
 	 */
 	public double distanceTo(City other) {
-		double dx = this.xCoordinate - other.xCoordinate;
-		double dy = this.yCoordinate - other.yCoordinate;
-		return Math.sqrt(dx * dx + dy * dy);
+		return Math.sqrt(Math.pow(other.getXCoordinate() - this.getXCoordinate(), 2) +
+				Math.pow(other.getYCoordinate() - this.getYCoordinate(), 2));
 	}
 
 	/**

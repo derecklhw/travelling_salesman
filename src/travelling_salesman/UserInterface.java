@@ -52,7 +52,6 @@ public class UserInterface {
      * @param endTime   The time at which the algorithm ended.
      */
     public static void displaySolution(ArrayList<City> solution, long startTime, long endTime) {
-        // Display the City ArrayList in the format: 1-2-3-4-5-1
         for (int i = 0; i < solution.size(); i++) {
             if (i > 0)
                 System.out.print("-");
