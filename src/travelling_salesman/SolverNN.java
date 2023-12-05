@@ -25,19 +25,7 @@ public class SolverNN {
 
         // Iterate until all cities are visited
         while (tour.size() < cities.size()) {
-            City nearestCity = null;
-            double minDistance = Double.MAX_VALUE;
-
-            // Find the nearest unvisited city
-            for (City city : cities) {
-                if (!visitedCities.contains(city.getNumber())) {
-                    double distance = currentCity.distanceTo(city);
-                    if (distance < minDistance) {
-                        minDistance = distance;
-                        nearestCity = city;
-                    }
-                }
-            }
+            City nearestCity = findNearestCity(currentCity, visitedCities, cities);
 
             tour.add(nearestCity);
             visitedCities.add(nearestCity.getNumber());
@@ -47,5 +35,30 @@ public class SolverNN {
         // Return to the starting city to complete the tour
         tour.add(tour.get(0));
         return tour;
+    }
+
+    /**
+     * Finds the nearest unvisited city to the current city.
+     *
+     * @param currentCity   The current city.
+     * @param visitedCities The set of visited cities.
+     * @param cities        The list of cities to search.
+     * @return The nearest unvisited city to the current city.
+     */
+    private static City findNearestCity(City currentCity, HashSet<Integer> visitedCities, ArrayList<City> cities) {
+        City nearestCity = null;
+        double minDistance = Double.MAX_VALUE;
+
+        // Find the nearest unvisited city
+        for (City city : cities) {
+            if (!visitedCities.contains(city.getNumber())) {
+                double distance = currentCity.distanceTo(city);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    nearestCity = city;
+                }
+            }
+        }
+        return nearestCity;
     }
 }
