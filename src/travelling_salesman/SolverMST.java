@@ -2,8 +2,44 @@ package travelling_salesman;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.PriorityQueue;
 
 public class SolverMST {
+
+    /**
+     * Utility class for representing an edge in a graph.
+     */
+    private static class Edge implements Comparable<Edge> {
+        int source;
+        int destination;
+        double weight;
+
+        /**
+         * Creates an edge between two cities.
+         * 
+         * @param source      The source city.
+         * @param destination The destination city.
+         * @param weight      The weight of the edge.
+         */
+        private Edge(int source, int destination, double weight) {
+            this.source = source;
+            this.destination = destination;
+            this.weight = weight;
+        }
+
+        /**
+         * Compares two edges by weight.
+         * 
+         * @param other The other edge.
+         * @return A negative integer, zero, or a positive integer as this edge is less
+         *         than, equal to, or greater than the other edge.
+         */
+        @Override
+        public int compareTo(Edge other) {
+            return Double.compare(this.weight, other.weight);
+        }
+    }
 
     /**
      * Solves the Travelling Salesman Problem using Prim's algorithm.
@@ -13,130 +49,167 @@ public class SolverMST {
      */
     public static ArrayList<City> solveMST(ArrayList<City> cities) {
         int n = cities.size();
-        double[][] adjacencyMatrix = createAdjacencyMatrix(cities, n);
 
-        // Track vertices included in MST
-        boolean[] inMST = new boolean[n];
+        // Create a graph with all edges between all cities
+        ArrayList<ArrayList<Edge>> graph = createGraph(cities);
 
-        // Store MST
-        int[] parent = new int[n];
+        // Perform Prim's algorithm to find the minimum spanning tree
+        Edge[] edgeTo = performPrimsAlgorithm(graph, n);
 
-        // Key values used to pick minimum weight edge in cut
-        double[] key = new double[n];
-        Arrays.fill(key, Double.MAX_VALUE);
+        // Build a graph for preorder traversal
+        ArrayList<ArrayList<Edge>> mstGraph = buildMstGraphForTraversal(edgeTo, n);
 
-        // Include first 1st vertex in MST
-        key[0] = 0;
-
-        // First node is always root of MST
-        parent[0] = -1;
-
-        for (int count = 0; count < n - 1; count++) {
-
-            // Pick the minimum key vertex from the set of vertices not yet included in MST
-            int u = minKey(key, inMST);
-
-            // Add the picked vertex to the MST
-            inMST[u] = true;
-
-            // Update key value and parent index of the adjacent vertices of the picked
-            // vertex.
-            for (int v = 0; v < n; v++) {
-                // Update the key only if adjacencyMatrix[u][v] is smaller than key[v]
-                if (adjacencyMatrix[u][v] != 0 && !inMST[v] && adjacencyMatrix[u][v] < key[v]) {
-                    parent[v] = u;
-                    key[v] = adjacencyMatrix[u][v];
-                }
-            }
-        }
-
-        return createTSPTourFromMST(parent, cities);
-    }
-
-    /**
-     * Finds the index of the city with the minimum key value that has not been
-     * included in the MST yet.
-     * 
-     * @param key   The array of key values for each city.
-     * @param inMST The array indicating whether a city is included in MST.
-     * @return The index of the city with the minimum key value.
-     */
-    private static int minKey(double[] key, boolean[] inMST) {
-        double min = Double.MAX_VALUE;
-        int minIndex = -1;
-
-        for (int v = 0; v < key.length; v++) {
-
-            // If vertex is not in MST and key is less than min
-            if (!inMST[v] && key[v] < min) {
-                min = key[v];
-                minIndex = v;
-            }
-        }
-
-        return minIndex;
-    }
-
-    /**
-     * Creates an adjacency matrix representing the graph of cities.
-     *
-     * @param cities The list of cities.
-     * @param n      The number of cities.
-     * @return The adjacency matrix representing distances between cities.
-     */
-    private static double[][] createAdjacencyMatrix(ArrayList<City> cities, int n) {
-        double[][] adjacencyMatrix = new double[n][n];
-
-        // Construct a symmetric matrix with distances between each pair of cities
-        for (int i = 0; i < n; i++) {
-            City city1 = cities.get(i);
-            for (int j = 0; j < n; j++) {
-                City city2 = cities.get(j);
-                if (i == j) {
-                    adjacencyMatrix[i][j] = 0;
-                } else {
-                    adjacencyMatrix[i][j] = city1.distanceTo(city2);
-                }
-            }
-        }
-
-        return adjacencyMatrix;
-    }
-
-    /**
-     * Creates a TSP tour from the Minimum Spanning Tree.
-     *
-     * @param parent The array representing the MST.
-     * @param cities The list of cities.
-     * @return The TSP tour.
-     */
-    private static ArrayList<City> createTSPTourFromMST(int[] parent, ArrayList<City> cities) {
+        HashSet<Integer> visited = new HashSet<>();
         ArrayList<City> tour = new ArrayList<>();
-        boolean[] visited = new boolean[cities.size()];
-        dfs(0, parent, visited, cities, tour);
-        tour.add(cities.get(0));
+
+        // Perform preorder traversal of the minimum spanning tree
+        preorderTraversal(0, mstGraph, visited, tour, cities);
+
+        optimizeTourWith2Opt(tour);
+        tour.add(tour.get(0));
+
         return tour;
     }
 
     /**
-     * Performs a DFS traversal to create a TSP tour from the MST.
-     *
-     * @param currentCity The current city being visited.
-     * @param parent      The array representing the MST.
-     * @param visited     The array tracking visited cities.
-     * @param cities      The list of cities.
-     * @param tour        The current tour being constructed.
+     * Creates a graph with all edges between all cities.
+     * 
+     * @param cities The list of cities to use in the algorithm.
+     * @return The graph with all edges between all cities.
      */
-    private static void dfs(int currentCity, int[] parent, boolean[] visited, ArrayList<City> cities,
-            ArrayList<City> tour) {
-        visited[currentCity] = true;
+    private static ArrayList<ArrayList<Edge>> createGraph(ArrayList<City> cities) {
+        int n = cities.size();
+        ArrayList<ArrayList<Edge>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+            for (int j = 0; j < n; j++) {
+                if (i != j) {
+                    graph.get(i).add(new Edge(i, j, cities.get(i).distanceTo(cities.get(j))));
+                }
+            }
+        }
+        return graph;
+    }
+
+    /**
+     * Performs Prim's algorithm to find the minimum spanning tree.
+     * 
+     * @param graph The graph with all edges between all cities.
+     * @param n     The number of cities.
+     * @return The minimum spanning tree.
+     */
+    private static Edge[] performPrimsAlgorithm(ArrayList<ArrayList<Edge>> graph, int n) {
+        boolean[] inMST = new boolean[n];
+        Edge[] edgeTo = new Edge[n];
+        double[] distTo = new double[n];
+        PriorityQueue<Edge> pq = new PriorityQueue<>();
+
+        Arrays.fill(distTo, Double.MAX_VALUE);
+        distTo[0] = 0.0;
+        pq.add(new Edge(-1, 0, 0.0));
+
+        while (!pq.isEmpty()) {
+            Edge e = pq.poll();
+            int v = e.destination;
+            if (inMST[v])
+                continue;
+            inMST[v] = true;
+
+            for (Edge edge : graph.get(v)) {
+                int w = edge.destination;
+                if (!inMST[w] && edge.weight < distTo[w]) {
+                    edgeTo[w] = edge;
+                    distTo[w] = edge.weight;
+                    pq.add(new Edge(v, w, distTo[w]));
+                }
+            }
+        }
+        return edgeTo;
+    }
+
+    /**
+     * Builds a graph for preorder traversal.
+     * 
+     * @param edgeTo The minimum spanning tree.
+     * @param n      The number of cities.
+     * @return The graph for preorder traversal.
+     */
+    private static ArrayList<ArrayList<Edge>> buildMstGraphForTraversal(Edge[] edgeTo, int n) {
+        ArrayList<ArrayList<Edge>> mstGraph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            mstGraph.add(new ArrayList<>());
+        }
+
+        for (Edge e : edgeTo) {
+            if (e != null) {
+                mstGraph.get(e.source).add(e);
+                mstGraph.get(e.destination).add(new Edge(e.destination, e.source, e.weight));
+            }
+        }
+        return mstGraph;
+    }
+
+    /**
+     * Performs preorder traversal of the minimum spanning tree.
+     * 
+     * @param currentCity The current city.
+     * @param mstGraph    The graph for preorder traversal.
+     * @param visited     The set of visited cities.
+     * @param tour        The tour.
+     * @param cities      The list of cities.
+     */
+    private static void preorderTraversal(int currentCity, ArrayList<ArrayList<Edge>> mstGraph,
+            HashSet<Integer> visited, ArrayList<City> tour, ArrayList<City> cities) {
+        visited.add(currentCity);
         tour.add(cities.get(currentCity));
 
-        // Iterate through each city in the list
-        for (int i = 0; i < cities.size(); i++) {
-            if (parent[i] == currentCity && !visited[i]) {
-                dfs(i, parent, visited, cities, tour);
+        for (Edge edge : mstGraph.get(currentCity)) {
+            if (!visited.contains(edge.destination)) {
+                preorderTraversal(edge.destination, mstGraph, visited, tour, cities);
             }
         }
     }
+
+    /**
+     * Optimizes the tour using the 2-opt algorithm.
+     * 
+     * @param tour The tour.
+     */
+    private static void optimizeTourWith2Opt(ArrayList<City> tour) {
+        boolean improvement = true;
+        while (improvement) {
+            improvement = false;
+            for (int i = 0; i < tour.size() - 2; i++) {
+                for (int j = i + 2; j < tour.size() - 1; j++) {
+                    double currentDistance = tour.get(i).distanceTo(tour.get(i + 1))
+                            + tour.get(j).distanceTo(tour.get(j + 1));
+                    double newDistance = tour.get(i).distanceTo(tour.get(j))
+                            + tour.get(i + 1).distanceTo(tour.get(j + 1));
+
+                    if (newDistance < currentDistance) {
+                        reverseSegment(tour, i + 1, j);
+                        improvement = true;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Reverses a segment of the tour.
+     * 
+     * @param tour  The tour.
+     * @param start The start index of the segment.
+     * @param end   The end index of the segment.
+     */
+    private static void reverseSegment(ArrayList<City> tour, int start, int end) {
+        while (start < end) {
+            City temp = tour.get(start);
+            tour.set(start, tour.get(end));
+            tour.set(end, temp);
+            start++;
+            end--;
+        }
+    }
+
 }
