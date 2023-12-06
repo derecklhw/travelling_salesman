@@ -31,4 +31,5 @@ do
         echo $input | java travelling_salesman.Main "$file_path"
         echo ""
     done
+    echo "============================================================"
 done < "$FILE_PATHS"
