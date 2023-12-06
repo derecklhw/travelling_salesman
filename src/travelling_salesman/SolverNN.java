@@ -4,12 +4,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
- * Utility class for solving the Travelling Salesman Problem using the Nearest
- * Neighbour algorithm.
+ * Utility class for solving the TSP using the Nearest Neighbour algorithm.
  */
 public class SolverNN {
     /**
-     * Solves the Travelling Salesman Problem using the Nearest Neighbour algorithm.
+     * Solves the TSP using the Nearest Neighbour algorithm.
      *
      * @param cities The list of cities to use in the algorithm.
      * @return The solution to the Travelling Salesman Problem.
