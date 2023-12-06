@@ -23,13 +23,16 @@ public class CityFileReader {
 
         try (Scanner scanner = new Scanner(file)) {
             while (scanner.hasNextLine()) {
+                // Read and trim each line
                 String line = scanner.nextLine().trim();
                 if (line.isEmpty())
                     continue;
 
+                // Split the line into parts separated by whitespace
                 String[] parts = line.split("\\s+");
                 if (parts.length == 3) {
                     try {
+                        // Parse the city number, x, and y coordinates from the line
                         int cityNumber = Integer.parseInt(parts[0]);
                         double x = Double.parseDouble(parts[1]);
                         double y = Double.parseDouble(parts[2]);
