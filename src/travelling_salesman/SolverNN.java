@@ -32,7 +32,7 @@ public class SolverNN {
         }
 
         // Return to the starting city to complete the tour
-        tour.add(tour.get(0));
+        tour.add(cities.get(0));
         return tour;
     }
 

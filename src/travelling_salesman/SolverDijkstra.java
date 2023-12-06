@@ -1,96 +1,106 @@
 package travelling_salesman;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Set;
 
 /**
- * Represent a node in a graph
+ * Utility class for solving the TSP using dijkstra algorithm.
  */
-class Node implements Comparable<Node> {
-    int vertex;
-    double weight;
-
-    /**
-     * Constructs a Node with a specified vertex index and weight.
-     *
-     * @param vertex The index of the vertex in the graph.
-     * @param weight The weight (cost) associated with the vertex.
-     */
-    Node(int vertex, double weight) {
-        this.vertex = vertex;
-        this.weight = weight;
-    }
-
-    /**
-     * Compares the weight of this node with another node.
-     *
-     * @param other The other node to compare with.
-     * @return A negative integer, zero, or a positive integer as this node is less
-     *         than, equal to, or greater than the specified node.
-     */
-    @Override
-    public int compareTo(Node other) {
-        return Double.compare(this.weight, other.weight);
-    }
-}
-
 public class SolverDijkstra {
 
     /**
-     * Solves the Travelling Salesman Problem using Dijkstra's algorithm.
+     * Solves the TSP using Dijkstra's algorithm.
      * 
      * @param cities The list of cities to use in the algorithm.
      * @return The solution to the Travelling Salesman Problem.
      */
     public static ArrayList<City> solveDijkstra(ArrayList<City> cities) {
-        int n = cities.size();
-        double[][] shortestPaths = new double[n][n];
+        double[][] adjacencyMatrix = createAdjacencyMatrix(cities);
+        ArrayList<City> tour = new ArrayList<>();
+        Set<Integer> visited = new HashSet<>();
 
-        // Calculate shortest path between all pairs of cities
-        for (int i = 0; i < n; i++) {
-            shortestPaths[i] = findShortestPathDijkstra(cities, i);
+        int currentCityIndex = 0;
+        tour.add(cities.get(currentCityIndex));
+        visited.add(currentCityIndex);
+
+        for (int i = 1; i < cities.size(); i++) {
+            double[] distances = findShortestDistance(adjacencyMatrix, currentCityIndex);
+            int nextCityIndex = findNextCity(distances, visited);
+            visited.add(nextCityIndex);
+            tour.add(cities.get(nextCityIndex));
+            currentCityIndex = nextCityIndex;
         }
 
-        // Construct a TSP tour using the shortest paths
-        return createTSPTourFromDijkstra(shortestPaths, cities);
+        // Return to the starting city
+        tour.add(cities.get(0));
+        return tour;
     }
 
     /**
-     * Implements Dijkstra's algorithm to find the shortest paths from a source city
-     * to all other cities.
-     * 
-     * @param cities The list of cities representing the graph.
-     * @param src    The index of the source city.
-     * @return An array of distances from the source to each city.
+     * Creates an adjacency matrix representing the distances between each pair of
+     * cities.
+     *
+     * @param cities The list of cities.
+     * @return A 2D array representing the distances between each pair of cities.
      */
-    private static double[] findShortestPathDijkstra(ArrayList<City> cities, int src) {
-        int n = cities.size();
-        double[] dist = new double[n];
-        boolean[] visited = new boolean[n];
+    public static double[][] createAdjacencyMatrix(ArrayList<City> cities) {
+        double[][] matrix = new double[cities.size()][cities.size()];
+        for (int i = 0; i < cities.size(); i++) {
+            for (int j = 0; j < cities.size(); j++) {
+                if (i == j) {
+                    matrix[i][j] = 0;
+                } else {
+                    matrix[i][j] = cities.get(i).distanceTo(cities.get(j));
+                }
+            }
+        }
+        return matrix;
+    }
 
-        // Initialize distances to all cities as infinity, except for the source city
-        Arrays.fill(dist, Double.MAX_VALUE);
+    /**
+     * Finds the shortest distances from a source city to all other cities using
+     * Dijkstra's algorithm.
+     *
+     * @param graph The graph represented as an adjacency matrix.
+     * @param src   The index of the source city.
+     * @return An array of distances from the source city to each other city.
+     */
+    private static double[] findShortestDistance(double[][] graph, int src) {
+        int V = graph.length;
+        double[] dist = new double[V];
+        PriorityQueue<CityDistance> pq = new PriorityQueue<>(Comparator.comparingDouble(CityDistance::getDistance));
+        Map<Integer, CityDistance> cityDistances = new HashMap<>();
+
+        // Initialize distances and priority queue
+        for (int i = 0; i < V; i++) {
+            CityDistance cd = new CityDistance(i, Double.MAX_VALUE);
+            cityDistances.put(i, cd);
+            pq.add(cd);
+            dist[i] = Double.MAX_VALUE;
+        }
+
+        // Set the distance of the source city to itself as zero
         dist[src] = 0;
+        cityDistances.get(src).setDistance(0);
 
-        // Priority queue to select the city with the shortest distance next
-        PriorityQueue<Node> pq = new PriorityQueue<>();
-        pq.offer(new Node(src, 0));
-
+        // Dijkstra's algorithm
         while (!pq.isEmpty()) {
-            // Poll the city with the shortest distance from the priority queue
-            Node node = pq.poll();
-            int u = node.vertex;
+            CityDistance cd = pq.poll();
+            int u = cd.getCity();
 
-            if (visited[u])
-                continue;
-            visited[u] = true;
-
-            // Update the distance to each neighboring city
-            for (int v = 0; v < n; v++) {
-                if (!visited[v] && dist[u] + cities.get(u).distanceTo(cities.get(v)) < dist[v]) {
-                    dist[v] = dist[u] + cities.get(u).distanceTo(cities.get(v));
-                    pq.offer(new Node(v, dist[v]));
+            // Update distances to adjacent cities
+            for (int v = 0; v < V; v++) {
+                if (graph[u][v] != 0 && dist[u] + graph[u][v] < dist[v]) {
+                    dist[v] = dist[u] + graph[u][v];
+                    CityDistance nextCd = cityDistances.get(v);
+                    nextCd.setDistance(dist[v]);
+                    pq.remove(nextCd); // Remove old entry
+                    pq.add(nextCd); // Insert updated entry
                 }
             }
         }
@@ -99,40 +109,68 @@ public class SolverDijkstra {
     }
 
     /**
-     * Creates a TSP tour from the shortest paths.
-     * 
-     * @param shortestPaths The array of shortest paths.
-     * @param cities        The list of cities.
-     * @return The TSP tour.
+     * Finds the index of the nearest unvisited city from the given distances array.
+     *
+     * @param distances The array of distances from the current city.
+     * @param visited   The set of already visited cities.
+     * @return The index of the nearest unvisited city.
      */
-    private static ArrayList<City> createTSPTourFromDijkstra(double[][] shortestPaths, ArrayList<City> cities) {
-        ArrayList<City> tour = new ArrayList<>();
-        boolean[] visited = new boolean[cities.size()];
-        int currentCity = 0; // Starting city index
-
-        tour.add(cities.get(currentCity));
-        visited[currentCity] = true;
-
-        // Iteratively find the nearest unvisited city and add it to the tour
-        for (int i = 1; i < cities.size(); i++) {
-            double minDist = Double.MAX_VALUE;
-            int nearestCityIndex = -1;
-
-            // Search for the nearest unvisited city
-            for (int j = 0; j < cities.size(); j++) {
-                if (!visited[j] && shortestPaths[currentCity][j] < minDist) {
-                    minDist = shortestPaths[currentCity][j];
-                    nearestCityIndex = j;
-                }
+    private static int findNextCity(double[] distances, Set<Integer> visited) {
+        double minDist = Double.MAX_VALUE;
+        int minIndex = -1;
+        for (int i = 0; i < distances.length; i++) {
+            if (!visited.contains(i) && distances[i] < minDist) {
+                minDist = distances[i];
+                minIndex = i;
             }
+        }
+        return minIndex;
+    }
 
-            tour.add(cities.get(nearestCityIndex));
-            visited[nearestCityIndex] = true;
-            currentCity = nearestCityIndex;
+    /**
+     * Utility class for storing a city and its distance from the current city.
+     */
+    private static class CityDistance {
+        private int city;
+        private double distance;
+
+        /**
+         * Constructs a CityDistance object.
+         *
+         * @param city     The city.
+         * @param distance The distance from the current city.
+         */
+        public CityDistance(int city, double distance) {
+            this.city = city;
+            this.distance = distance;
         }
 
-        // Return to the starting city to complete the tour
-        tour.add(tour.get(0));
-        return tour;
+        /**
+         * Gets the city.
+         *
+         * @return The city.
+         */
+        public int getCity() {
+            return city;
+        }
+
+        /**
+         * Sets the city.
+         *
+         * @param city The city.
+         */
+        public double getDistance() {
+            return distance;
+        }
+
+        /**
+         * Sets the distance from the current city.
+         *
+         * @param distance The distance from the current city.
+         */
+        public void setDistance(double distance) {
+            this.distance = distance;
+        }
     }
+
 }
