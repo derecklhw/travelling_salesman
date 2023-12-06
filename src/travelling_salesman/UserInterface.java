@@ -65,6 +65,7 @@ public class UserInterface {
 
         long duration = endTime - startTime;
         System.out.println("Execution Time: " + duration + " nanoseconds");
+        System.out.println("Exiting...");
     }
 
     /**
