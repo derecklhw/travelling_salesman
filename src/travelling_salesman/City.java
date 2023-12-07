@@ -88,6 +88,8 @@ class City {
 
 	/**
 	 * Returns a string representation of this city.
+	 * 
+	 * @return A string representation of this city.
 	 */
 	@Override
 	public String toString() {

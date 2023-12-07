@@ -5,3 +5,7 @@
 ../train/train1.txt
 ../train/train2.txt
 ../train/train3.txt
+../test/test1-23.txt
+../test/test2-23.txt
+../test/test3-23.txt
+../test/test4-23.txt
